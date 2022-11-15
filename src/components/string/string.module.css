@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: space-between;
+    height: 286px;
+}
+
+.form {
+    display: flex;
+    max-width: 567px;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.symbolsRow {
+    display: flex;
+    flex-direction: row;
+    margin: 0 auto;
+    gap: 16px;
+    width: fit-content;
+}
+
+.form > button {
+    width: 242px;
+}
