@@ -83,7 +83,7 @@ export const StringComponent: React.FC = () => {
         tmp = array[head];
         array[head] = array[tail];
         array[tail] = tmp;
-      }
+      };
 
       forceUpdate();
       head++;
