@@ -66,7 +66,6 @@ export const FibonacciPage: React.FC = () => {
             isLimitText={true}
             maxLength={19}
             onChange={onInput}
-
           />
           <Button
             extraClass="ml-6"
@@ -75,8 +74,8 @@ export const FibonacciPage: React.FC = () => {
             isLoader={isLoading}
             disabled={isDisabled}
           />
-
         </form>
+        
         <div className={styles.row}>
           {output.map((item, index) => {
             return (
