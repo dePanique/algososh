@@ -1,0 +1,30 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.form {
+    display: flex;
+    max-width: 567px;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 48px auto 0 auto ;
+    gap: 48px 16px;
+    max-width: 944px;
+    width: fit-content;
+}
+
+.form > button {
+    width: 242px;
+}
