@@ -1,0 +1,26 @@
+.form {
+    display: flex;
+    margin: 0 auto;
+    max-width: 829px;
+    justify-content: space-between;
+}
+
+.controlRow {
+    display: flex;
+    gap: 12px;
+}
+
+.controlRow > div > input {
+    width: 377px;
+}
+
+.circlesRow {
+    display: flex;
+    margin-top: 50px;
+    justify-content: center;
+    gap: 16px;
+}
+
+.pushWidth {
+    width: 121px;
+}
