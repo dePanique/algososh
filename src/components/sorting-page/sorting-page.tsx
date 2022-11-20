@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styles from './sorting-page.module.css';
 import { Direction } from "../../types/direction";
 import { ElementStates } from "../../types/element-states";
 import { startDelay } from "../../utils/utils";
@@ -6,7 +7,6 @@ import { Button } from "../ui/button/button";
 import { Column } from "../ui/column/column";
 import { RadioInput } from "../ui/radio-input/radio-input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
-import styles from './sorting-page.module.css';
 import { getArray, swap } from "./utils";
 
 export type TArray = {
