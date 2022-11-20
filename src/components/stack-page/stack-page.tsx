@@ -36,7 +36,6 @@ export const StackPage: React.FC = () => {
     stack.pop();
     stack.push({item: input, state: ElementStates.Default});
     setResult([...stack.getElements()]);
-    await startDelay(500);
 
     setPushStatus(false);
   };
@@ -49,7 +48,6 @@ export const StackPage: React.FC = () => {
 
     stack.pop();
     setResult([...stack.getElements()]);
-    await startDelay(500);
     
     setPopStatus(false);
   };
