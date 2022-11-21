@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import styles from './stack-page.module.css';
 import { ElementStates } from "../../types/element-states";
 import { startDelay } from "../../utils/utils";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
-import styles from './stack-page.module.css';
 import { Stack } from "./utils";
 
 type TStack = {
