@@ -32,7 +32,8 @@
 .result {
     display: flex;
     justify-content: center;
-    margin-top: 56px;
+    margin-top: 121px;
+    padding-left: 55px;
 }
 
 .button {
@@ -47,20 +48,19 @@
     margin-right: 15px;
 }
 
-.smallCircle {
-    margin: auto;
-}
-
 .resultElement {
     display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .mainCircle {
-    margin-top: 8px;
-    margin-bottom: 38px;
+    /* margin-top: 8px;
+    margin-bottom: 38px; */
 }
 
 .arrow {
-    margin-top: 92px;
-    margin-right: 18px;
+    margin-top: 6px;
+    margin-left: 15px;
+    margin-right: 17px;
 }
