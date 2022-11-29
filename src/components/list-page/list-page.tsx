@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styles from './list-page.module.css';
 import { ElementStates } from "../../types/element-states";
 import { startDelay, useForceUpdate } from "../../utils/utils";
 import { Button } from "../ui/button/button";
@@ -6,26 +7,10 @@ import { Circle } from "../ui/circle/circle";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
-import styles from './list-page.module.css';
+import { hardDisabled, initialObj } from "./constants";
+import { IObject, TActivness } from "./types";
 import { LinkedList } from "./utils";
 
-interface IObject {
-  index: number
-  state: ElementStates
-  value: number
-}
-
-const initialObj = {
-  index: 0,
-  state: ElementStates.Default,
-  value: 0
-};
-
-type TActivness = {
-  status: boolean,
-  value: number,
-  index?: number
-}
 
 export const ListPage: React.FC = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
@@ -43,6 +28,14 @@ export const ListPage: React.FC = () => {
     deleteTail: false,
     addByIndex: false,
     deleteByIndex: false,
+  });
+  const [disableStatus, setDisableStatus] = useState<{ [name: string]: boolean }>({
+    addInHead: true,
+    addInTail: true,
+    deleteHead: true,
+    deleteTail: true,
+    addByIndex: true,
+    deleteByIndex: true,
   });
 
   const forceUpdate = useForceUpdate();
@@ -74,6 +67,7 @@ export const ListPage: React.FC = () => {
       const { length } = array;
 
       setLoadersStatus(prev => ({ ...prev, addInTail: true }));
+      setDisableStatus(loadersStatus);
 
       setIsTailActive({
         status: true,
@@ -99,17 +93,17 @@ export const ListPage: React.FC = () => {
       list.changeElementColor(ElementStates.Default, length);
       setArray(list.getArray());
 
-      forceUpdate();
-
-
-
       setLoadersStatus(prev => ({ ...prev, addInTail: false }));
+      setDisableStatus(hardDisabled);
+      forceUpdate();
     }
   }
 
   const addToHead = async () => {
     if (typeof inputValue === 'number') {
       setLoadersStatus(prev => ({ ...prev, addInHead: true }));
+      setDisableStatus(loadersStatus);
+      forceUpdate();
 
       setHeadStatusRow([0]);
 
@@ -138,11 +132,13 @@ export const ListPage: React.FC = () => {
       forceUpdate();
 
       setLoadersStatus(prev => ({ ...prev, addInHead: false }));
+      setDisableStatus(hardDisabled);
     }
   }
 
   const deleteHead = async () => {
     setLoadersStatus(prev => ({ ...prev, deleteHead: true }));
+    setDisableStatus(loadersStatus);
 
     setTailStatusRow([0]);
     setIsDeleteActive({
@@ -174,10 +170,12 @@ export const ListPage: React.FC = () => {
     setTailStatusRow([]);
 
     setLoadersStatus(prev => ({ ...prev, deleteHead: false }));
+    setDisableStatus(hardDisabled);
   }
 
   const deleteTail = async () => {
     setLoadersStatus(prev => ({ ...prev, deleteTail: true }));
+    setDisableStatus(loadersStatus);
 
     setTailStatusRow([list.getSize() - 1]);
 
@@ -210,11 +208,13 @@ export const ListPage: React.FC = () => {
 
     setTailStatusRow([list.getSize() - 1]);
     setLoadersStatus(prev => ({ ...prev, deleteTail: false }));
+    setDisableStatus(hardDisabled);
   }
 
   const insertAt = async () => {
     if (typeof inputValue === 'number' && typeof indexInput === 'number') {
       setLoadersStatus(prev => ({ ...prev, addByIndex: true }));
+      setDisableStatus(loadersStatus);
       let ind = 0;
 
       while (ind < indexInput) {
@@ -228,7 +228,6 @@ export const ListPage: React.FC = () => {
         setArray(list.getArray());
         forceUpdate();
         await startDelay(1000);
-        console.log(ind);
         ind++;
       }
 
@@ -252,12 +251,14 @@ export const ListPage: React.FC = () => {
       setInputValue(null);
       forceUpdate();
       setLoadersStatus(prev => ({ ...prev, addByIndex: false }));
+      setDisableStatus(hardDisabled);
     }
   }
 
   const deleteAt = async () => {
     if (typeof indexInput === 'number') {
       setLoadersStatus(prev => ({ ...prev, deleteByIndex: true }));
+      setDisableStatus(loadersStatus);
 
       let ind = 0;
 
@@ -266,7 +267,6 @@ export const ListPage: React.FC = () => {
         setArray(list.getArray());
         forceUpdate();
         await startDelay(1000);
-        console.log(ind);
         ind++;
       }
 
@@ -309,12 +309,11 @@ export const ListPage: React.FC = () => {
       forceUpdate()
       setLoadersStatus(prev => ({ ...prev, deleteByIndex: false }));
       setIndexInput(null);
+      setDisableStatus(hardDisabled);
     }
   }
 
   const handleTail = (obj: TActivness) => {
-    console.log(obj.status);
-
     if (obj.status === true) {
       return (
         obj.status && <Circle
@@ -354,10 +353,30 @@ export const ListPage: React.FC = () => {
     setTailStatusRow([list.getSize() - 1]);
   }, [])
 
-  const checkInput = (value: number | null): boolean => {
-    if (typeof value === 'number') return false;
-    else return true;
+  const checkValue = (value: number | null, size: number): boolean => {
+    if (size > 19) {
+      return true
+    }
+    if (typeof value === 'number') {
+      return false
+    }
+    return true
   };
+
+  const checkIndex = (value: number | null, size: number) => {
+    if (size <= 0) {
+      return true
+    }
+
+    if (typeof value === 'number') {
+      if ((value >= 0) && (value < size)) {
+        return false
+      }
+    } else {
+      return true
+    };
+    return true
+  }
 
   return (
     <SolutionLayout title="Связный список">
@@ -387,39 +406,39 @@ export const ListPage: React.FC = () => {
               text='Добавить в head'
               onClick={addToHead}
               isLoader={loadersStatus.addInHead}
-              disabled={checkInput(inputValue)}
+              disabled={!disableStatus.addInHead || checkValue(inputValue, array.length)}
             />
             <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
-              disabled={checkInput(inputValue)}
+              disabled={!disableStatus.addInTail || checkValue(inputValue, array.length)}
             />
             <Button
               text='Удалить из head'
               onClick={deleteHead}
               isLoader={loadersStatus.deleteHead}
-              disabled={list.getSize() === 0}
+              disabled={!disableStatus.deleteHead || !array.length}
             />
             <Button
               text='Удалить из tail'
               onClick={deleteTail}
               isLoader={loadersStatus.deleteTail}
-              disabled={list.getSize() === 0}
+              disabled={!disableStatus.deleteTail || !array.length}
             />
 
             <Button
               text='Добавить по индексу'
               onClick={insertAt}
               isLoader={loadersStatus.addByIndex}
-              disabled={checkInput(indexInput) || checkInput(inputValue)}
+              disabled={!disableStatus.addByIndex || checkIndex(indexInput, array.length) || checkValue(inputValue, array.length)}
               extraClass={styles.button}
             />
             <Button
               text='Удалить по индексу'
               onClick={deleteAt}
               isLoader={loadersStatus.deleteByIndex}
-              disabled={checkInput(indexInput)}
+              disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
               extraClass={styles.button}
             />
           </div>

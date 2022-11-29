@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from './sorting-page.module.css';
 import { Direction } from "../../types/direction";
 import { ElementStates } from "../../types/element-states";
@@ -102,8 +102,15 @@ export const SortingPage: React.FC = () => {
     await render();
 
     setIsLock(false);
-  }
-
+  };
+  
+  useEffect(() => {
+    setNewArray(getArray());
+    return () => {
+      setNewArray([]);
+    }
+  }, []);
+  
   return (
     <SolutionLayout title="Сортировка массива">
       <div className={styles.handleRow}>

@@ -18,6 +18,7 @@ export const QueuePage: React.FC = () => {
   const [isDequeueBlocked, setIsDequeueBlocked] = useState(false);
   
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const inputValue = +e.target.value;
     if (!isNaN(inputValue)) setInput(inputValue);
   };
@@ -61,7 +62,7 @@ export const QueuePage: React.FC = () => {
 
   return (
     <SolutionLayout title="Очередь">
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
         <div className={styles.controlRow}>
           <Input
             type="text"

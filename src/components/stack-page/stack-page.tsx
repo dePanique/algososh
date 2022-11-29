@@ -27,6 +27,7 @@ export const StackPage: React.FC = () => {
   };
   
   const pushElement = async () => {
+    setInput('');
     setPushStatus(true);
 
     stack.push({item: input, state: ElementStates.Changing});
@@ -64,7 +65,7 @@ export const StackPage: React.FC = () => {
 
   return (
     <SolutionLayout title="Стек">
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
         <div className={styles.controlRow}>
           <Input
             type="text"

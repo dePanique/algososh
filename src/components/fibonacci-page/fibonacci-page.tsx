@@ -6,7 +6,6 @@ import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './fibonacci-page.module.css';
 
-
 export const FibonacciPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [output, setOutput] = useState<number[]>([]);
@@ -66,6 +65,7 @@ export const FibonacciPage: React.FC = () => {
             isLimitText={true}
             maxLength={19}
             onChange={onInput}
+            value={input}
           />
           <Button
             extraClass="ml-6"
