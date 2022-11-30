@@ -62,10 +62,12 @@ export const FibonacciPage: React.FC = () => {
       <section className={styles.container}>
         <form className={styles.form} onSubmit={onSubmit}>
           <Input
-            isLimitText={true}
-            maxLength={19}
+            type="number"
+            isLimitText
+            min={1}
+            max={19}
             onChange={onInput}
-            value={input}
+            value={input?.toString() || ''}
           />
           <Button
             extraClass="ml-6"

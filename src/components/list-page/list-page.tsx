@@ -11,7 +11,6 @@ import { hardDisabled, initialObj } from "./constants";
 import { IObject, TActivness } from "./types";
 import { LinkedList } from "./utils";
 
-
 export const ListPage: React.FC = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
   const [inputValue, setInputValue] = useState<number | null>(null);
@@ -384,7 +383,6 @@ export const ListPage: React.FC = () => {
         <div className={styles.controls}>
           <div className={styles.inputsBox}>
             <Input
-              type='text'
               maxLength={4}
               isLimitText={true}
               placeholder='Введите значение'
@@ -393,11 +391,12 @@ export const ListPage: React.FC = () => {
               value={inputValue?.toString() || ''}
             />
             <Input
-              type='text'
+              type='number'
               placeholder='Введите индекс'
               onChange={onIndexInput}
-              maxLength={4}
-              isLimitText={true}
+              min={0}
+              max={array.length - 1}
+              isLimitText
               value={indexInput?.toString() || ''}
             />
           </div>
