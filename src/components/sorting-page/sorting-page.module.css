@@ -1,0 +1,25 @@
+.handleRow {
+    display: flex;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 980px;
+}
+
+.radioRow {
+    display: flex;
+    gap: 44px;
+}
+
+.buttonsRow {
+    display: flex;
+    gap: 12px;
+}
+
+.columnsRow {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    padding-top: 48px;
+}

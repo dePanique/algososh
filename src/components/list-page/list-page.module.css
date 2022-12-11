@@ -1,0 +1,66 @@
+.container {
+    margin: auto 0;
+}
+
+.controls {
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    max-width: 952px;
+    max-height: 158px;
+    height: 100%;
+}
+
+.inputsBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 204px;
+    height: 100%;
+}
+
+.buttonsBox {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 736px;
+    max-height: 158px;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+.result {
+    display: flex;
+    justify-content: center;
+    margin-top: 121px;
+    padding-left: 55px;
+}
+
+.button {
+    flex-grow: 1;
+    max-width: 362px;
+}
+
+.resultColumns {
+    flex-direction: column;
+    justify-content: center;
+    max-width: 80px;
+    margin-right: 15px;
+}
+
+.resultElement {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.mainCircle {
+    /* margin-top: 8px;
+    margin-bottom: 38px; */
+}
+
+.arrow {
+    margin-top: 6px;
+    margin-left: 15px;
+    margin-right: 17px;
+}
