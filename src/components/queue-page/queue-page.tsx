@@ -9,7 +9,7 @@ import styles from './queue-page.module.css';
 import { Queue } from "./utils";
 
 
-export const QueuePage: React.FC = () => {
+export const QueuePage: React.FC<{children?: React.ReactNode}> = () => {
   const forceUpdate = useForceUpdate();
   const [input, setInput] = useState<number | null>(null);
   const [queue, setQueue] = useState(new Queue<number, ElementStates>(7, ElementStates.Default));

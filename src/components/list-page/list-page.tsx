@@ -11,7 +11,7 @@ import { hardDisabled, initialObj } from "./constants";
 import { IObject, TActivness } from "./types";
 import { LinkedList } from "./utils";
 
-export const ListPage: React.FC = () => {
+export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
   const [inputValue, setInputValue] = useState<number | null>(null);
   const [indexInput, setIndexInput] = useState<number | null>(null);
