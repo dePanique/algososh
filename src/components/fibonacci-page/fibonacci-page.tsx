@@ -68,6 +68,7 @@ export const FibonacciPage: React.FC = () => {
             max={19}
             onChange={onInput}
             value={input?.toString() || ''}
+            data-cy='input'
           />
           <Button
             extraClass="ml-6"
@@ -75,17 +76,22 @@ export const FibonacciPage: React.FC = () => {
             type="submit"
             isLoader={isLoading}
             disabled={isDisabled}
+            data-cy='button'
           />
         </form>
         
         <div className={styles.row}>
           {output.map((item, index) => {
             return (
-              <Circle
-                letter={item.toString()}
-                index={index}
+              <div
+                data-cy={`circle` + `${index}`}
                 key={index}
-              />
+              >
+                <Circle
+                  letter={item.toString()}
+                  index={index}
+                />
+              </div>
             )
           })}
         </div>
