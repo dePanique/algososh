@@ -1,7 +1,7 @@
 import cypress from "cypress";
 
 describe('should test fibonacci page', () => {
-    beforeEach('should enter StringComponent page', () => {
+    beforeEach('should enter fibonacci page', () => {
         cy.visit('http://localhost:3000/fibonacci');
         cy.get('[data-cy="button"]').as('button');
         cy.get('[data-cy="input"]').as('input');
@@ -23,7 +23,7 @@ describe('should test fibonacci page', () => {
 
         cy.get('@button')
             .should('have.attr', 'disabled')
-    })
+    });
 
     it('should test button disable', () => {
         cy.get('@input')
@@ -53,5 +53,5 @@ describe('should test fibonacci page', () => {
 
         cy.get('@circle4')
             .should('have.text', '34');
-    })
-});
+    });
+})

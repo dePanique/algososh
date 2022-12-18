@@ -73,6 +73,7 @@ export const StackPage: React.FC = () => {
             isLimitText={true}
             value={input}
             onChange={onInput}
+            data-cy={'input'}
           />
           <Button 
             text='Добавить'
@@ -80,12 +81,14 @@ export const StackPage: React.FC = () => {
             disabled={removeStatus || popStatus || !input}
             isLoader={pushStatus}
             extraClass={styles.pushWidth}
+            data-cy={'addButton'}
           />
           <Button 
             text="Удалить"
             onClick={popElement}
             disabled={popStatus || pushStatus || !stack.getSize()}
             isLoader={popStatus}
+            data-cy={'deleteButton'}
           />
         </div>
         <Button 
@@ -93,18 +96,29 @@ export const StackPage: React.FC = () => {
           onClick={clear}
           disabled={popStatus || pushStatus || !stack.getSize()}
           isLoader={removeStatus}
+          data-cy={'clearButton'}
         />
       </form>
 
-      <div className={styles.circlesRow}>
+      <div 
+        className={styles.circlesRow}
+        data-cy='circles'
+        >
         {result.map(({item, state}, index) => (
-          <Circle 
-            letter={item}
-            state={state}
-            index={index}
+          <div
+            data-cy='circle'
+            data-test={
+              `${state} ${item} ${index}${index === (stack.getSize() - 1) ? ' top' : ''}`
+            }
             key={index}
-            head={index === (stack.getSize() - 1) ? 'top' : ''}
-          />
+          >
+            <Circle 
+              letter={item}
+              state={state}
+              index={index}
+              head={index === (stack.getSize() - 1) ? 'top' : ''}
+            />
+          </div>
         ))}
       </div>
     </SolutionLayout>

@@ -28,7 +28,7 @@ export const QueuePage: React.FC<{children?: React.ReactNode}> = () => {
     setEnqueueStatus(true);
     
     queue.changeTailState(ElementStates.Changing);
-    await startDelay(500);
+    await startDelay(1000);
     
     setInput(null);
     queue.enqueue(input, ElementStates.Default);
@@ -70,37 +70,46 @@ export const QueuePage: React.FC<{children?: React.ReactNode}> = () => {
             isLimitText={true}
             value={input?.toString() || ''}
             onChange={onInput}
+            data-cy="input"
           />
           <Button 
             text='Добавить'
             onClick={addElement}
             disabled={!input || dequeueStatus}
             isLoader={enqueueStatus}
-          />
+            data-cy="addButton"
+            />
           <Button 
             text="Удалить"
             onClick={deleteElement}
             disabled={isDequeueBlocked || enqueueStatus}
             isLoader={dequeueStatus}
-          />
+            data-cy="deleteButton"
+            />
         </div>
         <Button
           text='Очистить'
           onClick={restartQueue}
           disabled={queue.isRestartBlocked || enqueueStatus || dequeueStatus}
+          data-cy="clearButton"
         />
       </form>
 
       <div className={styles.circlesRow}>
         {queue.getContainer().map(({item, state}, index) => (
-          <Circle
-            letter={item?.toString()}
-            state={state}
-            index={index}
+          <div
+            data-cy={`circle${index}`}
+            data-test={`${item || ''} ${state} ${index}`}
             key={index}
-            head={index === (queue.getHead()) ? 'head' : ''}
-            tail={index === (queue.getTail()) ? 'tail' : ''}
-          />
+          >
+            <Circle
+              letter={item?.toString()}
+              state={state}
+              index={index}
+              head={index === (queue.getHead()) ? 'head' : ''}
+              tail={index === (queue.getTail()) ? 'tail' : ''}
+            />
+          </div>
         ))}
       </div>
     </SolutionLayout>
