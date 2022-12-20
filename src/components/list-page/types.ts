@@ -11,3 +11,19 @@ export type TActivness = {
     value: number,
     index?: number
 }
+
+export interface IHashTable<T> {
+    [name: string]: {
+        'topRow': {
+            element: ''
+        },
+        'middleRow': {
+            value: T,
+            index: number,
+            state: ElementStates
+        },
+        'bottomRow': {
+            element: ''
+        }
+    } 
+}

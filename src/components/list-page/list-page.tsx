@@ -8,7 +8,7 @@ import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { hardDisabled, initialObj } from "./constants";
-import { IObject, TActivness } from "./types";
+import { IObject, TActivness, IHashTable } from "./types";
 import { LinkedList } from "./utils";
 
 export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
@@ -36,6 +36,9 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     addByIndex: true,
     deleteByIndex: true,
   });
+
+  
+  const [hashTable, setHashTable]  = useState<IHashTable<number>>()
 
   const forceUpdate = useForceUpdate();
 
@@ -102,32 +105,9 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     if (typeof inputValue === 'number') {
       setLoadersStatus(prev => ({ ...prev, addInHead: true }));
       setDisableStatus(loadersStatus);
-      forceUpdate();
 
-      setHeadStatusRow([0]);
-
-      setIsHeadActive({
-        status: true,
-        value: inputValue
-      });
-      list.prepend(inputValue);
-      forceUpdate();
-
-      await startDelay(700);
-      setIsHeadActive({
-        status: false,
-        value: inputValue
-      });
-      list.changeElementColor(ElementStates.Modified, 0);
-      setArray(list.getArray());
-      forceUpdate();
-
-      setInputValue(null);
-
-      await startDelay(700);
-      list.changeElementColor(ElementStates.Default, 0);
-      setArray(list.getArray());
-      setHeadStatusRow([])
+      list.changeElementColor(ElementStates.Changing, 0)
+      setHashTable(list.getTable())
       forceUpdate();
 
       setLoadersStatus(prev => ({ ...prev, addInHead: false }));
@@ -352,6 +332,10 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     setTailStatusRow([list.getSize() - 1]);
   }, [])
 
+  useEffect(() => {
+    setHashTable(list.getTable())
+  }, [array])
+
   const checkValue = (value: number | null, size: number): boolean => {
     if (size > 19) {
       return true
@@ -407,7 +391,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               isLoader={loadersStatus.addInHead}
               disabled={!disableStatus.addInHead || checkValue(inputValue, array.length)}
             />
-            <Button
+            {/* <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
@@ -438,21 +422,21 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               onClick={deleteAt}
               isLoader={loadersStatus.deleteByIndex}
               disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
-              extraClass={styles.button}
-            />
+              extraClass={styles.button} */}
+            {/* /> */}
           </div>
         </div>
 
         <div className={styles.result}>
-          {array && array.map(({ value, index: _, state }, ind, array) => (
+          {hashTable && array.map(({ value, index: _, state }, ind, array) => (
             <div className={styles.resultElement} key={ind}>
               <Circle
-                head={headStatusRow.includes(ind) ? handleHead(isHeadActive) : ''}
-                tail={tailStatusRow.includes(ind) ? handleTail(isTailActive) : ''}
+                head={''}
+                tail={'2'}
                 index={ind}
                 extraClass={styles.mainCircle}
-                letter={isDeleteActive.index === ind ? '' : value.toString()}
-                state={state}
+                letter={hashTable[`${ind}`].middleRow.value.toString()}
+                state={hashTable[`${ind}`].middleRow.state}
               />
               <div className={styles.arrow}>
                 {array.length - 1 !== ind ? <ArrowIcon /> : null}

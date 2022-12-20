@@ -1,5 +1,5 @@
 import { ElementStates } from "../../types/element-states";
-
+import { IHashTable } from "./types";
 export class Node<T> {
     value: T
     next: Node<T> | null
@@ -21,10 +21,14 @@ interface ILinkedList<T> {
 export class LinkedList<T> implements ILinkedList<T> {
     head: Node<T> | null;
     private size: number;
+    table: IHashTable<T> = {
+
+    }
 
     constructor() {
         this.head = null;
         this.size = 0;
+        this.table = {}
     }
 
     insertAt(element: T, index: number, state = ElementStates.Default) {
@@ -96,6 +100,7 @@ export class LinkedList<T> implements ILinkedList<T> {
             current.next = node;
         }
         this.size++;
+        this._createTable();
     }
 
     prepend(value: T, state: ElementStates = ElementStates.Changing) {
@@ -139,7 +144,8 @@ export class LinkedList<T> implements ILinkedList<T> {
             }
             current.state = state;
         }
-        this.size++;
+        
+        this._createTable();
     }
 
     deleteHead = () => {
@@ -162,5 +168,35 @@ export class LinkedList<T> implements ILinkedList<T> {
             current.next = null;
         }
         this.size--;
+    }
+
+    _createTable = () => {
+        const array = this.getArray()
+        for (let num in array) {
+            if (this.table.num) {
+                this.table.num.middleRow = {
+                    ...array[num]
+                }
+            } else {
+                this.table = {
+                    ...this.table,
+                    [`${num}`] : {
+                        'topRow': {
+                            element: ''
+                        },
+                        'middleRow' : {
+                            ...array[num]
+                        },
+                        'bottomRow': {
+                            element: ''
+                        }
+                    }
+                }
+            }
+        }  
+    }
+
+    getTable = () => {
+        return (this.table)
     }
 }
