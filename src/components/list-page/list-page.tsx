@@ -64,43 +64,6 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
   const list = concatList();
 
-  const addToTail = async () => {
-    if (typeof inputValue === 'number') {
-      const { length } = array;
-
-      setLoadersStatus(prev => ({ ...prev, addInTail: true }));
-      setDisableStatus(loadersStatus);
-
-      setIsTailActive({
-        status: true,
-        value: inputValue
-      });
-
-      list.append(inputValue);
-      forceUpdate();
-
-      await startDelay(700);
-      setIsTailActive({
-        status: false,
-        value: inputValue
-      });
-
-      list.changeElementColor(ElementStates.Modified, length);
-      setArray(list.getArray());
-      forceUpdate();
-
-      setInputValue(null);
-
-      await startDelay(700);
-      list.changeElementColor(ElementStates.Default, length);
-      setArray(list.getArray());
-
-      setLoadersStatus(prev => ({ ...prev, addInTail: false }));
-      setDisableStatus(hardDisabled);
-      forceUpdate();
-    }
-  }
-
   const updateList = () => {
     setHashTable(list.getTable())
     setArray(list.getArray())
@@ -138,6 +101,44 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
       setInputValue(null)
       
       setLoadersStatus(prev => ({ ...prev, addInHead: false }))
+      setDisableStatus(hardDisabled);
+    }
+  }
+
+  const addToTail = async () => {
+    if (typeof inputValue === 'number') {
+      setLoadersStatus(prev => ({ ...prev, addInTail: true }));
+      setDisableStatus(loadersStatus);
+
+      const { length } = array
+
+      list.addInTopRow(
+        length - 1,
+        <div 
+          data-cy={`smallCircle`}
+          data-test={`${inputValue.toString()} changing`}
+        >
+          <Circle 
+            letter={inputValue.toString()}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div> 
+      )
+
+      list.append(inputValue, ElementStates.Modified)
+      list.createTable()
+      await startDelay(1000)
+      
+      updateList()
+      await startDelay(1000)
+
+      list.changeElementColor(ElementStates.Default, length)
+      updateList()
+      
+      setInputValue(null)
+      
+      setLoadersStatus(prev => ({ ...prev, addInTail: false }))
       setDisableStatus(hardDisabled);
     }
   }
@@ -418,11 +419,12 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               disabled={Boolean(!inputValue)}
               data-cy={'addToHead'}
             />
-            { <Button
+            {<Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
               disabled={Boolean(!inputValue)}
+              data-cy={'addToTail'}
             />
             /*<Button
               text='Удалить из head'
@@ -449,8 +451,8 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               onClick={deleteAt}
               isLoader={loadersStatus.deleteByIndex}
               disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
-              extraClass={styles.button} */}
-            {/* /> */}
+              extraClass={styles.button} */
+            /* /> */}
           </div>
         </div>
 
