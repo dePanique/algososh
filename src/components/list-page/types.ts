@@ -30,7 +30,7 @@ export interface IHashTable<T> {
             element: string | ReactElement<any, string | JSXElementConstructor<any>>
         },
         'middleRow': {
-            value: T,
+            value: T | string,
             index: number,
             state: ElementStates
         },

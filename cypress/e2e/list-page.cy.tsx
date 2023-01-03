@@ -5,6 +5,7 @@ describe('should test list-page', () => {
         cy.visit('http://localhost:3000/list')
         cy.get('[data-cy="addToHead"]').as('addToHead')
         cy.get('[data-cy="addToTail"]').as('addToTail')
+        cy.get('[data-cy="deleteHead"]').as('deleteHead')
         cy.get('[data-cy="inputValue"]').as('inputValue')
         cy.get('[data-cy="inputIndex"]').as('inputIndex')
     })
@@ -317,4 +318,101 @@ describe('should test list-page', () => {
     //         .should('contain', 'tail')
     //         .should('have.attr', 'data-test', '22 4 default')
     // })
+
+    // it('should test deleteHead status', () => {
+    //     cy.reload()
+
+    //     cy.get('@deleteHead')
+    //         .should('not.be.disabled')
+    //         .click()
+    //         .wait(700)
+    //         .click()
+    //         .wait(700)
+    //         .click()
+    //         .wait(700)
+    //         .click()
+    //         .wait(1000)
+    //         .should('be.disabled')
+    // })
+
+    it('should test deleteHead result', () => {
+        cy.reload()
+
+        for (let i = 0; i < 4; i++) {
+            cy.get(`[data-cy="circle${i}"]`).as(`circle${i}`)
+        }
+
+        cy.get(`@circle0`)
+            .should('contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '0 0 default')
+
+        cy.get(`@circle1`)
+            .should('not.contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '4 1 default')
+
+        cy.get(`@circle2`)
+            .should('not.contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '31 2 default')
+
+        cy.get(`@circle3`)
+            .should('not.contain', 'head')
+            .should('contain', 'tail')
+            .should('have.attr', 'data-test', '8 3 default')
+
+        cy.get('@deleteHead').click()
+
+        cy.get(`[data-cy="smallCircle"]`).as(`smallCircle`)
+            .should('have.attr', 'data-test', '0 changing')
+
+        cy.get(`@circle0`)
+            .should('contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '  0 default')
+
+        cy.wait(700)
+
+        cy.get('@smallCircle').should('not.exist')
+
+        cy.get(`@circle0`)
+            .should('contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '4 0 default')
+
+        cy.get(`@circle1`)
+            .should('not.contain', 'head')
+            .should('not.contain', 'tail')
+            .should('have.attr', 'data-test', '31 1 default')
+
+        cy.get(`@circle2`)
+            .should('not.contain', 'head')
+            .should('contain', 'tail')
+            .should('have.attr', 'data-test', '8 2 default')
+
+            cy.get('@deleteHead').click()
+
+            cy.get(`[data-cy="smallCircle"]`).as(`smallCircle`)
+                .should('have.attr', 'data-test', '4 changing')
+    
+            cy.get(`@circle0`)
+                .should('contain', 'head')
+                .should('not.contain', 'tail')
+                .should('have.attr', 'data-test', '  0 default')
+    
+            cy.wait(700)
+    
+            cy.get('@smallCircle').should('not.exist')
+    
+            cy.get(`@circle0`)
+                .should('contain', 'head')
+                .should('not.contain', 'tail')
+                .should('have.attr', 'data-test', '31 0 default')
+    
+            cy.get(`@circle1`)
+                .should('not.contain', 'head')
+                .should('contain', 'tail')
+                .should('have.attr', 'data-test', '8 1 default')
+    })
 })

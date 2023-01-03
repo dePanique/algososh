@@ -74,7 +74,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
       setLoadersStatus(prev => ({ ...prev, addInHead: true }));
       setDisableStatus(loadersStatus);
 
-      list.addInTopRow(
+      list.addInHeadRow(
         0,
         <div 
           data-cy={`smallCircle`}
@@ -112,7 +112,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
       const { length } = array
 
-      list.addInTopRow(
+      list.addInHeadRow(
         length - 1,
         <div 
           data-cy={`smallCircle`}
@@ -147,35 +147,32 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     setLoadersStatus(prev => ({ ...prev, deleteHead: true }));
     setDisableStatus(loadersStatus);
 
-    setTailStatusRow([0]);
-    setIsDeleteActive({
-      status: true,
-      value: 0,
-      index: 0
-    });
+    const smallCircleValue: string | undefined = hashTable && hashTable[`0`].middleRow.value.toString()
+    
+    if (hashTable) {
+      hashTable[`0`].middleRow.value = ' '
+    }
 
-    setIsTailActive({
-      status: true,
-      value: array[0].value,
-    })
+    list.addInTailRow(
+      0,
+      <div 
+        data-cy={`smallCircle`}
+        data-test={`${smallCircleValue} changing`}
+      >
+        <Circle 
+          letter={smallCircleValue}
+          state={ElementStates.Changing}
+          isSmall={true}
+        />
+      </div> 
+    )
 
-    await startDelay(700);
     list.deleteHead()
-    setArray(list.getArray());
-    forceUpdate();
-
-    setIsDeleteActive({
-      status: false,
-      value: 0,
-      index: -1
-    });
-
-    setIsHeadActive({
-      status: false,
-      value: 0,
-    })
-    setTailStatusRow([]);
-
+    list.createTable()
+    await startDelay(1000)
+    
+    updateList()
+    
     setLoadersStatus(prev => ({ ...prev, deleteHead: false }));
     setDisableStatus(hardDisabled);
   }
@@ -405,7 +402,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               placeholder='Введите индекс'
               onChange={onIndexInput}
               min={0}
-              max={array.length - 1}
+              max={array.length}
               isLimitText
               value={indexInput?.toString() || ''}
               data-cy='inputIndex'
@@ -419,20 +416,21 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               disabled={Boolean(!inputValue)}
               data-cy={'addToHead'}
             />
-            {<Button
+            <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
               disabled={Boolean(!inputValue)}
               data-cy={'addToTail'}
-            />
-            /*<Button
+              />
+            <Button
               text='Удалить из head'
               onClick={deleteHead}
               isLoader={loadersStatus.deleteHead}
               disabled={!disableStatus.deleteHead || !array.length}
+              data-cy={'deleteHead'}
             />
-            <Button
+            {/*<Button
               text='Удалить из tail'
               onClick={deleteTail}
               isLoader={loadersStatus.deleteTail}
@@ -462,7 +460,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               className={styles.resultElement} 
               key={ind} 
               data-cy={`circle${ind}`}
-              data-test={`${value} ${ind} ${state}`}
+              data-test={`${hashTable[`${ind}`].middleRow.value} ${ind} ${state}`}
             >
               <Circle
                 head={hashTable[`${ind}`].topRow.element}

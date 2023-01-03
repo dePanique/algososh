@@ -149,10 +149,11 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     deleteHead = () => {
-        let next;
+        let next
         if (this.head !== null) {
-            next = this.head.next;
-            this.head = next;
+            next = this.head.next
+            this.head = next
+            this.size--
         }
     }
 
@@ -197,8 +198,12 @@ export class LinkedList<T> implements ILinkedList<T> {
         }  
     }
 
-    addInTopRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
+    addInHeadRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
         this.table[`${index}`].topRow.element = value 
+    }
+
+    addInTailRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
+        this.table[`${index}`].bottomRow.element = value 
     }
 
     getTable = () => {
