@@ -101,16 +101,43 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     }
   }
 
+  const updateList = () => {
+    setHashTable(list.getTable())
+    setArray(list.getArray())
+  }
+
   const addToHead = async () => {
     if (typeof inputValue === 'number') {
       setLoadersStatus(prev => ({ ...prev, addInHead: true }));
       setDisableStatus(loadersStatus);
 
-      list.changeElementColor(ElementStates.Changing, 0)
-      setHashTable(list.getTable())
-      forceUpdate();
+      list.addInTopRow(
+        0,
+        <div 
+          data-cy={`smallCircle`}
+          data-test={`${inputValue.toString()} changing`}
+        >
+          <Circle 
+            letter={inputValue.toString()}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div> 
+      )
 
-      setLoadersStatus(prev => ({ ...prev, addInHead: false }));
+      list.prepend(inputValue, ElementStates.Modified)
+      list.createTable()
+      await startDelay(1000)
+      
+      updateList()
+      await startDelay(1000)
+
+      list.changeElementColor(ElementStates.Default, 0)
+      updateList()
+      
+      setInputValue(null)
+      
+      setLoadersStatus(prev => ({ ...prev, addInHead: false }))
       setDisableStatus(hardDisabled);
     }
   }
@@ -329,12 +356,9 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
       list.append(item, ElementStates.Default)
     });
     setArray(list.getArray());
-    setTailStatusRow([list.getSize() - 1]);
-  }, [])
-
-  useEffect(() => {
+    list.createTable()
     setHashTable(list.getTable())
-  }, [array])
+  }, [])
 
   const checkValue = (value: number | null, size: number): boolean => {
     if (size > 19) {
@@ -373,6 +397,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               extraClass={' mb-4'}
               onChange={onValueInput}
               value={inputValue?.toString() || ''}
+              data-cy='inputValue'
             />
             <Input
               type='number'
@@ -382,6 +407,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               max={array.length - 1}
               isLimitText
               value={indexInput?.toString() || ''}
+              data-cy='inputIndex'
             />
           </div>
           <div className={styles.buttonsBox + ' ml-6'}>
@@ -389,15 +415,16 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               text='Добавить в head'
               onClick={addToHead}
               isLoader={loadersStatus.addInHead}
-              disabled={!disableStatus.addInHead || checkValue(inputValue, array.length)}
+              disabled={Boolean(!inputValue)}
+              data-cy={'addToHead'}
             />
-            {/* <Button
+            { <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
-              disabled={!disableStatus.addInTail || checkValue(inputValue, array.length)}
+              disabled={Boolean(!inputValue)}
             />
-            <Button
+            /*<Button
               text='Удалить из head'
               onClick={deleteHead}
               isLoader={loadersStatus.deleteHead}
@@ -429,10 +456,15 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
         <div className={styles.result}>
           {hashTable && array.map(({ value, index: _, state }, ind, array) => (
-            <div className={styles.resultElement} key={ind}>
+            <div 
+              className={styles.resultElement} 
+              key={ind} 
+              data-cy={`circle${ind}`}
+              data-test={`${value} ${ind} ${state}`}
+            >
               <Circle
-                head={''}
-                tail={'2'}
+                head={hashTable[`${ind}`].topRow.element}
+                tail={hashTable[`${ind}`].bottomRow.element}
                 index={ind}
                 extraClass={styles.mainCircle}
                 letter={hashTable[`${ind}`].middleRow.value.toString()}

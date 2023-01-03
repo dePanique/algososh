@@ -25,7 +25,7 @@ describe('should test fibonacci page', () => {
             .should('have.attr', 'disabled')
     });
 
-    it('should test button disable', () => {
+    it('should test fibonacci alg', () => {
         cy.get('@input')
             .type('5')
 

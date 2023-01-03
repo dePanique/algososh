@@ -1,5 +1,6 @@
+import React, { JSXElementConstructor, ReactElement } from "react";
 import { ElementStates } from "../../types/element-states";
-import { IHashTable } from "./types";
+import { CircleProps, IHashTable } from "./types";
 export class Node<T> {
     value: T
     next: Node<T> | null
@@ -100,13 +101,13 @@ export class LinkedList<T> implements ILinkedList<T> {
             current.next = node;
         }
         this.size++;
-        this._createTable();
     }
 
     prepend(value: T, state: ElementStates = ElementStates.Changing) {
-        const node = new Node(value, 0, state = ElementStates.Changing)
-        node.next = this.head;
+        const node = new Node(value, 0, state)
+        node.next = this.head
         this.head = node
+        this.size++
     }
 
     getSize() {
@@ -130,7 +131,6 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     changeElementColor = (state: ElementStates, index: number) => {
-
         let current;
         let ind = 0;
 
@@ -145,7 +145,7 @@ export class LinkedList<T> implements ILinkedList<T> {
             current.state = state;
         }
         
-        this._createTable();
+        this.createTable();
     }
 
     deleteHead = () => {
@@ -170,8 +170,9 @@ export class LinkedList<T> implements ILinkedList<T> {
         this.size--;
     }
 
-    _createTable = () => {
+    createTable = () => {
         const array = this.getArray()
+        const { length } = array
         for (let num in array) {
             if (this.table.num) {
                 this.table.num.middleRow = {
@@ -182,18 +183,22 @@ export class LinkedList<T> implements ILinkedList<T> {
                     ...this.table,
                     [`${num}`] : {
                         'topRow': {
-                            element: ''
+                            element: num === '0' ? 'head' : ''
                         },
                         'middleRow' : {
                             ...array[num]
                         },
                         'bottomRow': {
-                            element: ''
+                            element: +num === (length - 1) ? 'tail' : ''
                         }
                     }
                 }
             }
         }  
+    }
+
+    addInTopRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
+        this.table[`${index}`].topRow.element = value 
     }
 
     getTable = () => {

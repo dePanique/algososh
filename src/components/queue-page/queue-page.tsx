@@ -71,7 +71,7 @@ export const QueuePage: React.FC<{children?: React.ReactNode}> = () => {
             value={input?.toString() || ''}
             onChange={onInput}
             data-cy="input"
-          />
+            />
           <Button 
             text='Добавить'
             onClick={addElement}

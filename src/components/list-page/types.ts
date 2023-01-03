@@ -1,3 +1,4 @@
+import React, { JSXElementConstructor, ReactElement } from "react";
 import { ElementStates } from "../../types/element-states";
 
 export interface IObject {
@@ -12,10 +13,21 @@ export type TActivness = {
     index?: number
 }
 
+export interface CircleProps {
+  state?: ElementStates;
+  letter?: string;
+  head?: string | React.ReactElement | null;
+  index?: number;
+  tail?: string | React.ReactElement | null;
+  tailType?: "string" | "element";
+  extraClass?: string;
+  isSmall?: boolean;
+}
+
 export interface IHashTable<T> {
     [name: string]: {
         'topRow': {
-            element: ''
+            element: string | ReactElement<any, string | JSXElementConstructor<any>>
         },
         'middleRow': {
             value: T,
@@ -23,7 +35,7 @@ export interface IHashTable<T> {
             state: ElementStates
         },
         'bottomRow': {
-            element: ''
+            element: string | ReactElement<any, string | JSXElementConstructor<any>>
         }
     } 
 }
