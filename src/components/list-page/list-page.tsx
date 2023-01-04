@@ -11,7 +11,7 @@ import { hardDisabled, initialObj } from "./constants";
 import { IObject, TActivness, IHashTable } from "./types";
 import { LinkedList } from "./utils";
 
-export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
+export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
   const [inputValue, setInputValue] = useState<number | null>(null);
   const [indexInput, setIndexInput] = useState<number | null>(null);
@@ -37,8 +37,8 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     deleteByIndex: true,
   });
 
-  
-  const [hashTable, setHashTable]  = useState<IHashTable<number>>()
+
+  const [hashTable, setHashTable] = useState<IHashTable<number>>()
 
   const forceUpdate = useForceUpdate();
 
@@ -76,30 +76,30 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
       list.addInHeadRow(
         0,
-        <div 
+        <div
           data-cy={`smallCircle`}
           data-test={`${inputValue.toString()} changing`}
         >
-          <Circle 
+          <Circle
             letter={inputValue.toString()}
             state={ElementStates.Changing}
             isSmall={true}
           />
-        </div> 
+        </div>
       )
 
       list.prepend(inputValue, ElementStates.Modified)
       list.createTable()
       await startDelay(1000)
-      
+
       updateList()
       await startDelay(1000)
 
       list.changeElementColor(ElementStates.Default, 0)
       updateList()
-      
+
       setInputValue(null)
-      
+
       setLoadersStatus(prev => ({ ...prev, addInHead: false }))
       setDisableStatus(hardDisabled);
     }
@@ -114,30 +114,30 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
       list.addInHeadRow(
         length - 1,
-        <div 
+        <div
           data-cy={`smallCircle`}
           data-test={`${inputValue.toString()} changing`}
         >
-          <Circle 
+          <Circle
             letter={inputValue.toString()}
             state={ElementStates.Changing}
             isSmall={true}
           />
-        </div> 
+        </div>
       )
 
       list.append(inputValue, ElementStates.Modified)
       list.createTable()
       await startDelay(1000)
-      
+
       updateList()
       await startDelay(1000)
 
       list.changeElementColor(ElementStates.Default, length)
       updateList()
-      
+
       setInputValue(null)
-      
+
       setLoadersStatus(prev => ({ ...prev, addInTail: false }))
       setDisableStatus(hardDisabled);
     }
@@ -148,31 +148,31 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     setDisableStatus(loadersStatus);
 
     const smallCircleValue: string | undefined = hashTable && hashTable[`0`].middleRow.value.toString()
-    
+
     if (hashTable) {
       hashTable[`0`].middleRow.value = ' '
     }
 
     list.addInTailRow(
       0,
-      <div 
+      <div
         data-cy={`smallCircle`}
         data-test={`${smallCircleValue} changing`}
       >
-        <Circle 
+        <Circle
           letter={smallCircleValue}
           state={ElementStates.Changing}
           isSmall={true}
         />
-      </div> 
+      </div>
     )
 
     list.deleteHead()
     list.createTable()
     await startDelay(1000)
-    
+
     updateList()
-    
+
     setLoadersStatus(prev => ({ ...prev, deleteHead: false }));
     setDisableStatus(hardDisabled);
   }
@@ -181,36 +181,34 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
     setLoadersStatus(prev => ({ ...prev, deleteTail: true }));
     setDisableStatus(loadersStatus);
 
-    setTailStatusRow([list.getSize() - 1]);
+    const { length } = array
 
-    setIsDeleteActive({
-      status: true,
-      value: 0,
-      index: list.getSize() - 1,
-    });
+    const smallCircleValue: string | undefined = hashTable && hashTable[`${length - 1}`].middleRow.value.toString()
 
-    setIsTailActive({
-      status: true,
-      value: array[array.length - 1].value,
-    });
+    if (hashTable) {
+      hashTable[`${length - 1}`].middleRow.value = ' '
+    }
 
-    await startDelay(700);
-    list.deleteTail();
-    setArray(list.getArray());
-    forceUpdate();
+    list.addInTailRow(
+      length - 1,
+      <div
+        data-cy={`smallCircle`}
+        data-test={`${smallCircleValue} changing`}
+      >
+        <Circle
+          letter={smallCircleValue}
+          state={ElementStates.Changing}
+          isSmall={true}
+        />
+      </div>
+    )
 
-    setIsDeleteActive({
-      status: false,
-      value: 0,
-      index: -1,
-    });
+    list.deleteTail()
+    list.createTable()
+    await startDelay(1000)
 
-    setIsTailActive({
-      status: false,
-      value: 0,
-    });
+    updateList()
 
-    setTailStatusRow([list.getSize() - 1]);
     setLoadersStatus(prev => ({ ...prev, deleteTail: false }));
     setDisableStatus(hardDisabled);
   }
@@ -422,7 +420,7 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               isLoader={loadersStatus.addInTail}
               disabled={Boolean(!inputValue)}
               data-cy={'addToTail'}
-              />
+            />
             <Button
               text='Удалить из head'
               onClick={deleteHead}
@@ -430,14 +428,15 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
               disabled={!disableStatus.deleteHead || !array.length}
               data-cy={'deleteHead'}
             />
-            {/*<Button
+            <Button
               text='Удалить из tail'
               onClick={deleteTail}
               isLoader={loadersStatus.deleteTail}
               disabled={!disableStatus.deleteTail || !array.length}
+              data-cy={'deleteTail'}
             />
 
-            <Button
+            {/*<Button
               text='Добавить по индексу'
               onClick={insertAt}
               isLoader={loadersStatus.addByIndex}
@@ -456,9 +455,9 @@ export const ListPage: React.FC<{children?: React.ReactNode}> = () => {
 
         <div className={styles.result}>
           {hashTable && array.map(({ value, index: _, state }, ind, array) => (
-            <div 
-              className={styles.resultElement} 
-              key={ind} 
+            <div
+              className={styles.resultElement}
+              key={ind}
               data-cy={`circle${ind}`}
               data-test={`${hashTable[`${ind}`].middleRow.value} ${ind} ${state}`}
             >

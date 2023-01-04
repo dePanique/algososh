@@ -1,6 +1,6 @@
-import React, { JSXElementConstructor, ReactElement } from "react";
+import { JSXElementConstructor, ReactElement } from "react";
 import { ElementStates } from "../../types/element-states";
-import { CircleProps, IHashTable } from "./types";
+import { IHashTable } from "./types";
 export class Node<T> {
     value: T
     next: Node<T> | null
