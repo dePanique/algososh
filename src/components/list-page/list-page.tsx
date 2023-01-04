@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import styles from './list-page.module.css';
 import { ElementStates } from "../../types/element-states";
-import { startDelay, useForceUpdate } from "../../utils/utils";
+import { startDelay } from "../../utils/utils";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { hardDisabled, initialObj } from "./constants";
-import { IObject, TActivness, IHashTable } from "./types";
+import { IObject, IHashTable } from "./types";
 import { LinkedList } from "./utils";
 
 export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
   const [inputValue, setInputValue] = useState<number | null>(null);
   const [indexInput, setIndexInput] = useState<number | null>(null);
-  const [isTailActive, setIsTailActive] = useState<TActivness>({ status: false, value: 0 });
-  const [isHeadActive, setIsHeadActive] = useState<TActivness>({ status: false, value: 0 });
-  const [isDeleteActive, setIsDeleteActive] = useState<TActivness>({ status: false, value: 0, index: -1 });
-  const [headStatusRow, setHeadStatusRow] = useState<number[]>([0]);
-  const [tailStatusRow, setTailStatusRow] = useState<number[]>([]);
   const [loadersStatus, setLoadersStatus] = useState<{ [name: string]: boolean }>({
     addInHead: false,
     addInTail: false,
@@ -37,10 +32,7 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
     deleteByIndex: true,
   });
 
-
   const [hashTable, setHashTable] = useState<IHashTable<number>>()
-
-  const forceUpdate = useForceUpdate();
 
   const onValueInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = +e.target.value;
@@ -219,39 +211,57 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
       setDisableStatus(loadersStatus);
       let ind = 0;
 
-      while (ind < indexInput) {
-        setIsHeadActive({
-          status: true,
-          value: inputValue
-        });
-        setHeadStatusRow([ind]);
+      while (ind <= indexInput) {
+        console.log(ind);
 
-        list.changeElementColor(ElementStates.Changing, ind);
-        setArray(list.getArray());
-        forceUpdate();
-        await startDelay(1000);
+        list.addInHeadRow(
+          ind,
+          <div
+            data-cy={`smallCircle`}
+            data-test={`${inputValue.toString()} changing`}
+          >
+            <Circle
+              letter={inputValue.toString()}
+              state={ElementStates.Changing}
+              isSmall={true}
+            />
+          </div>
+        )
+
+        if (ind === 1) {
+          list.addInHeadRow(
+            0,
+            'head'
+          )
+
+          hashTable && (
+            hashTable[`0`].middleRow.state = ElementStates.Changing
+          )
+        } else if (ind > 1) {
+          list.addInHeadRow(
+            ind - 1,
+            ''
+          )
+
+          hashTable && (
+            hashTable[`${ind - 1}`].middleRow.state = ElementStates.Changing
+          )
+        }
+
+        updateList()
+        await startDelay(700);
         ind++;
       }
 
-      setHeadStatusRow([ind]);
-      await startDelay(1000);
+      list.insertAt(inputValue, indexInput, ElementStates.Modified)
+      list.createTable()
+      updateList()
 
-      setHeadStatusRow([]);
-      list.insertAt(inputValue, ind);
-      while (ind >= 0) {
-        ind--;
-        list.changeElementColor(ElementStates.Default, ind);
-      }
-      list.changeElementColor(ElementStates.Modified, indexInput);
-      setArray(list.getArray());
-      forceUpdate();
-      await startDelay(1000);
+      await startDelay(700)
 
-      list.changeElementColor(ElementStates.Default, indexInput);
-      setArray(list.getArray());
-      setIndexInput(null);
-      setInputValue(null);
-      forceUpdate();
+      list.changeElementColor(ElementStates.Default, indexInput)
+      updateList()
+
       setLoadersStatus(prev => ({ ...prev, addByIndex: false }));
       setDisableStatus(hardDisabled);
     }
@@ -265,87 +275,48 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
       let ind = 0;
 
       while (ind <= indexInput) {
-        list.changeElementColor(ElementStates.Changing, ind);
-        setArray(list.getArray());
-        forceUpdate();
-        await startDelay(1000);
+        hashTable && (
+          hashTable[`${ind}`].middleRow.state = ElementStates.Changing
+        )
+
         ind++;
+        updateList()
+        await startDelay(1000);
       }
 
-      setIsDeleteActive({
-        status: true,
-        value: 0,
-        index: ind - 1
-      });
+      const smallCircleValue: string | undefined = hashTable && hashTable[`${ind - 1}`].middleRow.value.toString()
 
-      setIsTailActive({
-        status: true,
-        value: array[ind - 1].value
-      });
-
-      setTailStatusRow([ind - 1]);
-      list.changeElementColor(ElementStates.Default, ind - 1);
-      setArray(list.getArray());
-      forceUpdate();
-      await startDelay(1000);
-
-      list.deleteAt(indexInput);
-      setArray(list.getArray());
-      setIsTailActive({
-        status: false,
-        value: 0
-      });
-      setIsDeleteActive({
-        status: false,
-        value: 0,
-        index: -1
-      });
-      forceUpdate();
-
-      while (ind >= 0) {
-        list.changeElementColor(ElementStates.Default, ind);
-        ind--
+      if (hashTable) {
+        hashTable[`${ind - 1}`].middleRow.value = ' '
       }
 
-      setArray(list.getArray());
-      forceUpdate()
-      setLoadersStatus(prev => ({ ...prev, deleteByIndex: false }));
+      list.addInTailRow(
+        ind - 1,
+        <div
+          data-cy={`smallCircle`}
+          data-test={`${smallCircleValue} changing`}
+        >
+          <Circle
+            letter={smallCircleValue}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div>
+      )
+
+      updateList()
+
+      list.deleteAt(ind - 1)
+      list.createTable()
+      await startDelay(1000)
+
+      updateList()
+
       setIndexInput(null);
+      setLoadersStatus(prev => ({ ...prev, deleteByIndex: false }));
       setDisableStatus(hardDisabled);
     }
   }
-
-  const handleTail = (obj: TActivness) => {
-    if (obj.status === true) {
-      return (
-        obj.status && <Circle
-          letter={obj.value.toString()}
-          state={ElementStates.Changing}
-          isSmall={true}
-        />
-      )
-    } else {
-      return (
-        'tail'
-      )
-    }
-  }
-
-  const handleHead = (obj: TActivness) => {
-    if (obj.status === true) {
-      return (
-        obj.status && <Circle
-          letter={obj.value.toString()}
-          state={ElementStates.Changing}
-          isSmall={true}
-        />
-      )
-    } else {
-      return (
-        'head'
-      )
-    }
-  };
 
   useEffect(() => {
     [0, 4, 31, 8].forEach((item) => {
@@ -400,7 +371,7 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               placeholder='Введите индекс'
               onChange={onIndexInput}
               min={0}
-              max={array.length}
+              max={array.length ? array.length - 1 : '0'}
               isLimitText
               value={indexInput?.toString() || ''}
               data-cy='inputIndex'
@@ -436,7 +407,7 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               data-cy={'deleteTail'}
             />
 
-            {/*<Button
+            <Button
               text='Добавить по индексу'
               onClick={insertAt}
               isLoader={loadersStatus.addByIndex}
@@ -448,8 +419,8 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               onClick={deleteAt}
               isLoader={loadersStatus.deleteByIndex}
               disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
-              extraClass={styles.button} */
-            /* /> */}
+              extraClass={styles.button}
+            />
           </div>
         </div>
 

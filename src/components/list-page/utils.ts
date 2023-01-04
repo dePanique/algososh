@@ -22,24 +22,20 @@ interface ILinkedList<T> {
 export class LinkedList<T> implements ILinkedList<T> {
     head: Node<T> | null;
     private size: number;
-    table: IHashTable<T> = {
-
-    }
+    table: IHashTable<T> = {}
 
     constructor() {
         this.head = null;
         this.size = 0;
-        this.table = {}
+        this.table = {};
     }
 
-    insertAt(element: T, index: number, state = ElementStates.Default) {
-        console.log('insert');
-
+    insertAt(element: T, index: number, state: ElementStates = ElementStates.Default) {
         if (index < 0 || index > this.size) {
             console.log('Enter a valid index');
             return;
         } else {
-            const node = new Node(element, index, state = ElementStates.Default);
+            const node = new Node(element, index, state);
 
             if (index === 0) {
                 node.next = this.head;
@@ -64,8 +60,6 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     deleteAt(index: number) {
-        console.log('delete');
-        
         if (index >= 0 && index < this.size && this.head) {
             let curr = this.head;
             let prev = curr;
