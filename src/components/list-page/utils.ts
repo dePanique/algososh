@@ -200,6 +200,10 @@ export class LinkedList<T> implements ILinkedList<T> {
         this.table[`${index}`].bottomRow.element = value 
     }
 
+    deleteTableValue = (index: number) => {
+        this.table[`${index}`].middleRow.value = ' ' 
+    }
+
     getTable = () => {
         return (this.table)
     }

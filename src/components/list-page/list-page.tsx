@@ -217,8 +217,8 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
         list.addInHeadRow(
           ind,
           <div
-            data-cy={`smallCircle`}
-            data-test={`${inputValue.toString()} changing`}
+            data-cy={`smallCircle${ind}`}
+            data-test={`${inputValue.toString()} ${ind} changing`}
           >
             <Circle
               letter={inputValue.toString()}
@@ -262,6 +262,8 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
       list.changeElementColor(ElementStates.Default, indexInput)
       updateList()
 
+      setInputValue(null)
+      setIndexInput(null)
       setLoadersStatus(prev => ({ ...prev, addByIndex: false }));
       setDisableStatus(hardDisabled);
     }
@@ -275,26 +277,24 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
       let ind = 0;
 
       while (ind <= indexInput) {
-        hashTable && (
-          hashTable[`${ind}`].middleRow.state = ElementStates.Changing
-        )
+        list.changeElementColor(ElementStates.Changing, ind)
 
-        ind++;
+        list.createTable()
         updateList()
         await startDelay(1000);
+        ind++;
       }
+
+      list.deleteTableValue(ind - 1)
+      setHashTable(list.getTable())
 
       const smallCircleValue: string | undefined = hashTable && hashTable[`${ind - 1}`].middleRow.value.toString()
-
-      if (hashTable) {
-        hashTable[`${ind - 1}`].middleRow.value = ' '
-      }
 
       list.addInTailRow(
         ind - 1,
         <div
           data-cy={`smallCircle`}
-          data-test={`${smallCircleValue} changing`}
+          data-test={`${smallCircleValue} ${ind - 1} changing`}
         >
           <Circle
             letter={smallCircleValue}
@@ -305,11 +305,16 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
       )
 
       updateList()
+      await startDelay(700)
+      list.createTable()
+      updateList()
 
       list.deleteAt(ind - 1)
       list.createTable()
-      await startDelay(1000)
-
+      while(ind >= 0) {
+        list.changeElementColor(ElementStates.Default, ind)
+        ind--
+      }
       updateList()
 
       setIndexInput(null);
@@ -382,14 +387,14 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               text='Добавить в head'
               onClick={addToHead}
               isLoader={loadersStatus.addInHead}
-              disabled={Boolean(!inputValue)}
+              disabled={inputValue === null ? true : false}
               data-cy={'addToHead'}
             />
             <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
-              disabled={Boolean(!inputValue)}
+              disabled={inputValue === null ? true : false}
               data-cy={'addToTail'}
             />
             <Button
@@ -406,13 +411,13 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               disabled={!disableStatus.deleteTail || !array.length}
               data-cy={'deleteTail'}
             />
-
             <Button
               text='Добавить по индексу'
               onClick={insertAt}
               isLoader={loadersStatus.addByIndex}
               disabled={!disableStatus.addByIndex || checkIndex(indexInput, array.length) || checkValue(inputValue, array.length)}
               extraClass={styles.button}
+              data-cy={'insertAt'}
             />
             <Button
               text='Удалить по индексу'
@@ -420,6 +425,7 @@ export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
               isLoader={loadersStatus.deleteByIndex}
               disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
               extraClass={styles.button}
+              data-cy={'deleteAt'}
             />
           </div>
         </div>
