@@ -1,0 +1,1 @@
+export const localServerUrl = 'http://localhost:3000';

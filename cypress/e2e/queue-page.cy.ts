@@ -1,8 +1,9 @@
-import cypress from "cypress"
+import cypress from "cypress";
+import { localServerUrl } from './../../src/constants/e2eTests';
 
 describe('should test StringComponent', () => {
     beforeEach('should enter queue page', () => {
-        cy.visit('http://localhost:3000/queue')
+        cy.visit(`${localServerUrl}/queue`)
         cy.get('[data-cy="addButton"]').as('addButton')
         cy.get('[data-cy="deleteButton"]').as('deleteButton')
         cy.get('[data-cy="clearButton"]').as('clearButton')

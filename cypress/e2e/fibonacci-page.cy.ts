@@ -1,8 +1,9 @@
 import cypress from "cypress";
+import { localServerUrl } from "../../src/constants/e2eTests";
 
 describe('should test fibonacci page', () => {
     beforeEach('should enter fibonacci page', () => {
-        cy.visit('http://localhost:3000/fibonacci');
+        cy.visit(`${localServerUrl}/fibonacci`);
         cy.get('[data-cy="button"]').as('button');
         cy.get('[data-cy="input"]').as('input');
     });

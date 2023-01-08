@@ -1,8 +1,10 @@
 import cypress from "cypress";
+import { localServerUrl } from './../../src/constants/e2eTests';
+
 
 describe('test links', () => {
     beforeEach(() => {
-        cy.visit('http://localhost:3000');
+        cy.visit(localServerUrl);
     })
 
     it('open recursion', () => {

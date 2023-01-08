@@ -1,8 +1,9 @@
 import cypress from "cypress";
+import { localServerUrl } from './../../src/constants/e2eTests';
 
 describe('should test StringComponent', () => {
     beforeEach('should enter StringComponent page', () => {
-        cy.visit('http://localhost:3000/recursion');
+        cy.visit(`${localServerUrl}/recursion`);
         cy.get('[data-cy="button"]').as('button');
         cy.get('[data-cy="input"]').as('input');
     });
