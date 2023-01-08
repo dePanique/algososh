@@ -1,5 +1,6 @@
+import { JSXElementConstructor, ReactElement } from "react";
 import { ElementStates } from "../../types/element-states";
-
+import { IHashTable } from "./types";
 export class Node<T> {
     value: T
     next: Node<T> | null
@@ -21,20 +22,20 @@ interface ILinkedList<T> {
 export class LinkedList<T> implements ILinkedList<T> {
     head: Node<T> | null;
     private size: number;
+    table: IHashTable<T> = {}
 
     constructor() {
         this.head = null;
         this.size = 0;
+        this.table = {};
     }
 
-    insertAt(element: T, index: number, state = ElementStates.Default) {
-        console.log('insert');
-
+    insertAt(element: T, index: number, state: ElementStates = ElementStates.Default) {
         if (index < 0 || index > this.size) {
             console.log('Enter a valid index');
             return;
         } else {
-            const node = new Node(element, index, state = ElementStates.Default);
+            const node = new Node(element, index, state);
 
             if (index === 0) {
                 node.next = this.head;
@@ -59,8 +60,6 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     deleteAt(index: number) {
-        console.log('delete');
-        
         if (index >= 0 && index < this.size && this.head) {
             let curr = this.head;
             let prev = curr;
@@ -99,9 +98,10 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     prepend(value: T, state: ElementStates = ElementStates.Changing) {
-        const node = new Node(value, 0, state = ElementStates.Changing)
-        node.next = this.head;
+        const node = new Node(value, 0, state)
+        node.next = this.head
         this.head = node
+        this.size++
     }
 
     getSize() {
@@ -125,7 +125,6 @@ export class LinkedList<T> implements ILinkedList<T> {
     }
 
     changeElementColor = (state: ElementStates, index: number) => {
-
         let current;
         let ind = 0;
 
@@ -139,14 +138,16 @@ export class LinkedList<T> implements ILinkedList<T> {
             }
             current.state = state;
         }
-        this.size++;
+        
+        this.createTable();
     }
 
     deleteHead = () => {
-        let next;
+        let next
         if (this.head !== null) {
-            next = this.head.next;
-            this.head = next;
+            next = this.head.next
+            this.head = next
+            this.size--
         }
     }
 
@@ -162,5 +163,48 @@ export class LinkedList<T> implements ILinkedList<T> {
             current.next = null;
         }
         this.size--;
+    }
+
+    createTable = () => {
+        const array = this.getArray()
+        const { length } = array
+        for (let num in array) {
+            if (this.table.num) {
+                this.table.num.middleRow = {
+                    ...array[num]
+                }
+            } else {
+                this.table = {
+                    ...this.table,
+                    [`${num}`] : {
+                        'topRow': {
+                            element: num === '0' ? 'head' : ''
+                        },
+                        'middleRow' : {
+                            ...array[num]
+                        },
+                        'bottomRow': {
+                            element: +num === (length - 1) ? 'tail' : ''
+                        }
+                    }
+                }
+            }
+        }  
+    }
+
+    addInHeadRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
+        this.table[`${index}`].topRow.element = value 
+    }
+
+    addInTailRow = (index: number, value: string | ReactElement<any, string | JSXElementConstructor<any>>) => {
+        this.table[`${index}`].bottomRow.element = value 
+    }
+
+    deleteTableValue = (index: number) => {
+        this.table[`${index}`].middleRow.value = ' ' 
+    }
+
+    getTable = () => {
+        return (this.table)
     }
 }

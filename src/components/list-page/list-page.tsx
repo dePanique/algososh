@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import styles from './list-page.module.css';
 import { ElementStates } from "../../types/element-states";
-import { startDelay, useForceUpdate } from "../../utils/utils";
+import { startDelay } from "../../utils/utils";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { hardDisabled, initialObj } from "./constants";
-import { IObject, TActivness } from "./types";
+import { IObject, IHashTable } from "./types";
 import { LinkedList } from "./utils";
 
-export const ListPage: React.FC = () => {
+export const ListPage: React.FC<{ children?: React.ReactNode }> = () => {
   const [array, setArray] = useState<IObject[]>([initialObj]);
   const [inputValue, setInputValue] = useState<number | null>(null);
   const [indexInput, setIndexInput] = useState<number | null>(null);
-  const [isTailActive, setIsTailActive] = useState<TActivness>({ status: false, value: 0 });
-  const [isHeadActive, setIsHeadActive] = useState<TActivness>({ status: false, value: 0 });
-  const [isDeleteActive, setIsDeleteActive] = useState<TActivness>({ status: false, value: 0, index: -1 });
-  const [headStatusRow, setHeadStatusRow] = useState<number[]>([0]);
-  const [tailStatusRow, setTailStatusRow] = useState<number[]>([]);
   const [loadersStatus, setLoadersStatus] = useState<{ [name: string]: boolean }>({
     addInHead: false,
     addInTail: false,
@@ -37,7 +32,7 @@ export const ListPage: React.FC = () => {
     deleteByIndex: true,
   });
 
-  const forceUpdate = useForceUpdate();
+  const [hashTable, setHashTable] = useState<IHashTable<number>>()
 
   const onValueInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = +e.target.value;
@@ -61,76 +56,81 @@ export const ListPage: React.FC = () => {
 
   const list = concatList();
 
-  const addToTail = async () => {
-    if (typeof inputValue === 'number') {
-      const { length } = array;
-
-      setLoadersStatus(prev => ({ ...prev, addInTail: true }));
-      setDisableStatus(loadersStatus);
-
-      setIsTailActive({
-        status: true,
-        value: inputValue
-      });
-
-      list.append(inputValue);
-      forceUpdate();
-
-      await startDelay(700);
-      setIsTailActive({
-        status: false,
-        value: inputValue
-      });
-
-      list.changeElementColor(ElementStates.Modified, length);
-      setArray(list.getArray());
-      forceUpdate();
-
-      setInputValue(null);
-
-      await startDelay(700);
-      list.changeElementColor(ElementStates.Default, length);
-      setArray(list.getArray());
-
-      setLoadersStatus(prev => ({ ...prev, addInTail: false }));
-      setDisableStatus(hardDisabled);
-      forceUpdate();
-    }
+  const updateList = () => {
+    setHashTable(list.getTable())
+    setArray(list.getArray())
   }
 
   const addToHead = async () => {
     if (typeof inputValue === 'number') {
       setLoadersStatus(prev => ({ ...prev, addInHead: true }));
       setDisableStatus(loadersStatus);
-      forceUpdate();
 
-      setHeadStatusRow([0]);
+      list.addInHeadRow(
+        0,
+        <div
+          data-cy={`smallCircle`}
+          data-test={`${inputValue.toString()} changing`}
+        >
+          <Circle
+            letter={inputValue.toString()}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div>
+      )
 
-      setIsHeadActive({
-        status: true,
-        value: inputValue
-      });
-      list.prepend(inputValue);
-      forceUpdate();
+      list.prepend(inputValue, ElementStates.Modified)
+      list.createTable()
+      await startDelay(1000)
 
-      await startDelay(700);
-      setIsHeadActive({
-        status: false,
-        value: inputValue
-      });
-      list.changeElementColor(ElementStates.Modified, 0);
-      setArray(list.getArray());
-      forceUpdate();
+      updateList()
+      await startDelay(1000)
 
-      setInputValue(null);
+      list.changeElementColor(ElementStates.Default, 0)
+      updateList()
 
-      await startDelay(700);
-      list.changeElementColor(ElementStates.Default, 0);
-      setArray(list.getArray());
-      setHeadStatusRow([])
-      forceUpdate();
+      setInputValue(null)
 
-      setLoadersStatus(prev => ({ ...prev, addInHead: false }));
+      setLoadersStatus(prev => ({ ...prev, addInHead: false }))
+      setDisableStatus(hardDisabled);
+    }
+  }
+
+  const addToTail = async () => {
+    if (typeof inputValue === 'number') {
+      setLoadersStatus(prev => ({ ...prev, addInTail: true }));
+      setDisableStatus(loadersStatus);
+
+      const { length } = array
+
+      list.addInHeadRow(
+        length - 1,
+        <div
+          data-cy={`smallCircle`}
+          data-test={`${inputValue.toString()} changing`}
+        >
+          <Circle
+            letter={inputValue.toString()}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div>
+      )
+
+      list.append(inputValue, ElementStates.Modified)
+      list.createTable()
+      await startDelay(1000)
+
+      updateList()
+      await startDelay(1000)
+
+      list.changeElementColor(ElementStates.Default, length)
+      updateList()
+
+      setInputValue(null)
+
+      setLoadersStatus(prev => ({ ...prev, addInTail: false }))
       setDisableStatus(hardDisabled);
     }
   }
@@ -139,34 +139,31 @@ export const ListPage: React.FC = () => {
     setLoadersStatus(prev => ({ ...prev, deleteHead: true }));
     setDisableStatus(loadersStatus);
 
-    setTailStatusRow([0]);
-    setIsDeleteActive({
-      status: true,
-      value: 0,
-      index: 0
-    });
+    const smallCircleValue: string | undefined = hashTable && hashTable[`0`].middleRow.value.toString()
 
-    setIsTailActive({
-      status: true,
-      value: array[0].value,
-    })
+    if (hashTable) {
+      hashTable[`0`].middleRow.value = ' '
+    }
 
-    await startDelay(700);
+    list.addInTailRow(
+      0,
+      <div
+        data-cy={`smallCircle`}
+        data-test={`${smallCircleValue} changing`}
+      >
+        <Circle
+          letter={smallCircleValue}
+          state={ElementStates.Changing}
+          isSmall={true}
+        />
+      </div>
+    )
+
     list.deleteHead()
-    setArray(list.getArray());
-    forceUpdate();
+    list.createTable()
+    await startDelay(1000)
 
-    setIsDeleteActive({
-      status: false,
-      value: 0,
-      index: -1
-    });
-
-    setIsHeadActive({
-      status: false,
-      value: 0,
-    })
-    setTailStatusRow([]);
+    updateList()
 
     setLoadersStatus(prev => ({ ...prev, deleteHead: false }));
     setDisableStatus(hardDisabled);
@@ -176,36 +173,34 @@ export const ListPage: React.FC = () => {
     setLoadersStatus(prev => ({ ...prev, deleteTail: true }));
     setDisableStatus(loadersStatus);
 
-    setTailStatusRow([list.getSize() - 1]);
+    const { length } = array
 
-    setIsDeleteActive({
-      status: true,
-      value: 0,
-      index: list.getSize() - 1,
-    });
+    const smallCircleValue: string | undefined = hashTable && hashTable[`${length - 1}`].middleRow.value.toString()
 
-    setIsTailActive({
-      status: true,
-      value: array[array.length - 1].value,
-    });
+    if (hashTable) {
+      hashTable[`${length - 1}`].middleRow.value = ' '
+    }
 
-    await startDelay(700);
-    list.deleteTail();
-    setArray(list.getArray());
-    forceUpdate();
+    list.addInTailRow(
+      length - 1,
+      <div
+        data-cy={`smallCircle`}
+        data-test={`${smallCircleValue} changing`}
+      >
+        <Circle
+          letter={smallCircleValue}
+          state={ElementStates.Changing}
+          isSmall={true}
+        />
+      </div>
+    )
 
-    setIsDeleteActive({
-      status: false,
-      value: 0,
-      index: -1,
-    });
+    list.deleteTail()
+    list.createTable()
+    await startDelay(1000)
 
-    setIsTailActive({
-      status: false,
-      value: 0,
-    });
+    updateList()
 
-    setTailStatusRow([list.getSize() - 1]);
     setLoadersStatus(prev => ({ ...prev, deleteTail: false }));
     setDisableStatus(hardDisabled);
   }
@@ -216,39 +211,59 @@ export const ListPage: React.FC = () => {
       setDisableStatus(loadersStatus);
       let ind = 0;
 
-      while (ind < indexInput) {
-        setIsHeadActive({
-          status: true,
-          value: inputValue
-        });
-        setHeadStatusRow([ind]);
+      while (ind <= indexInput) {
+        console.log(ind);
 
-        list.changeElementColor(ElementStates.Changing, ind);
-        setArray(list.getArray());
-        forceUpdate();
-        await startDelay(1000);
+        list.addInHeadRow(
+          ind,
+          <div
+            data-cy={`smallCircle${ind}`}
+            data-test={`${inputValue.toString()} ${ind} changing`}
+          >
+            <Circle
+              letter={inputValue.toString()}
+              state={ElementStates.Changing}
+              isSmall={true}
+            />
+          </div>
+        )
+
+        if (ind === 1) {
+          list.addInHeadRow(
+            0,
+            'head'
+          )
+
+          hashTable && (
+            hashTable[`0`].middleRow.state = ElementStates.Changing
+          )
+        } else if (ind > 1) {
+          list.addInHeadRow(
+            ind - 1,
+            ''
+          )
+
+          hashTable && (
+            hashTable[`${ind - 1}`].middleRow.state = ElementStates.Changing
+          )
+        }
+
+        updateList()
+        await startDelay(700);
         ind++;
       }
 
-      setHeadStatusRow([ind]);
-      await startDelay(1000);
+      list.insertAt(inputValue, indexInput, ElementStates.Modified)
+      list.createTable()
+      updateList()
 
-      setHeadStatusRow([]);
-      list.insertAt(inputValue, ind);
-      while (ind >= 0) {
-        ind--;
-        list.changeElementColor(ElementStates.Default, ind);
-      }
-      list.changeElementColor(ElementStates.Modified, indexInput);
-      setArray(list.getArray());
-      forceUpdate();
-      await startDelay(1000);
+      await startDelay(700)
 
-      list.changeElementColor(ElementStates.Default, indexInput);
-      setArray(list.getArray());
-      setIndexInput(null);
-      setInputValue(null);
-      forceUpdate();
+      list.changeElementColor(ElementStates.Default, indexInput)
+      updateList()
+
+      setInputValue(null)
+      setIndexInput(null)
       setLoadersStatus(prev => ({ ...prev, addByIndex: false }));
       setDisableStatus(hardDisabled);
     }
@@ -262,94 +277,59 @@ export const ListPage: React.FC = () => {
       let ind = 0;
 
       while (ind <= indexInput) {
-        list.changeElementColor(ElementStates.Changing, ind);
-        setArray(list.getArray());
-        forceUpdate();
+        list.changeElementColor(ElementStates.Changing, ind)
+
+        list.createTable()
+        updateList()
         await startDelay(1000);
         ind++;
       }
 
-      setIsDeleteActive({
-        status: true,
-        value: 0,
-        index: ind - 1
-      });
+      list.deleteTableValue(ind - 1)
+      setHashTable(list.getTable())
 
-      setIsTailActive({
-        status: true,
-        value: array[ind - 1].value
-      });
+      const smallCircleValue: string | undefined = hashTable && hashTable[`${ind - 1}`].middleRow.value.toString()
 
-      setTailStatusRow([ind - 1]);
-      list.changeElementColor(ElementStates.Default, ind - 1);
-      setArray(list.getArray());
-      forceUpdate();
-      await startDelay(1000);
+      list.addInTailRow(
+        ind - 1,
+        <div
+          data-cy={`smallCircle`}
+          data-test={`${smallCircleValue} ${ind - 1} changing`}
+        >
+          <Circle
+            letter={smallCircleValue}
+            state={ElementStates.Changing}
+            isSmall={true}
+          />
+        </div>
+      )
 
-      list.deleteAt(indexInput);
-      setArray(list.getArray());
-      setIsTailActive({
-        status: false,
-        value: 0
-      });
-      setIsDeleteActive({
-        status: false,
-        value: 0,
-        index: -1
-      });
-      forceUpdate();
+      updateList()
+      await startDelay(700)
+      list.createTable()
+      updateList()
 
-      while (ind >= 0) {
-        list.changeElementColor(ElementStates.Default, ind);
+      list.deleteAt(ind - 1)
+      list.createTable()
+      while(ind >= 0) {
+        list.changeElementColor(ElementStates.Default, ind)
         ind--
       }
+      updateList()
 
-      setArray(list.getArray());
-      forceUpdate()
-      setLoadersStatus(prev => ({ ...prev, deleteByIndex: false }));
       setIndexInput(null);
+      setLoadersStatus(prev => ({ ...prev, deleteByIndex: false }));
       setDisableStatus(hardDisabled);
     }
   }
-
-  const handleTail = (obj: TActivness) => {
-    if (obj.status === true) {
-      return (
-        obj.status && <Circle
-          letter={obj.value.toString()}
-          state={ElementStates.Changing}
-          isSmall={true}
-        />
-      )
-    } else {
-      return (
-        'tail'
-      )
-    }
-  }
-
-  const handleHead = (obj: TActivness) => {
-    if (obj.status === true) {
-      return (
-        obj.status && <Circle
-          letter={obj.value.toString()}
-          state={ElementStates.Changing}
-          isSmall={true}
-        />
-      )
-    } else {
-      return (
-        'head'
-      )
-    }
-  };
 
   useEffect(() => {
     [0, 4, 31, 8].forEach((item) => {
       list.append(item, ElementStates.Default)
     });
     setArray(list.getArray());
-    setTailStatusRow([list.getSize() - 1]);
+    list.createTable()
+    setHashTable(list.getTable())
   }, [])
 
   const checkValue = (value: number | null, size: number): boolean => {
@@ -389,15 +369,17 @@ export const ListPage: React.FC = () => {
               extraClass={' mb-4'}
               onChange={onValueInput}
               value={inputValue?.toString() || ''}
+              data-cy='inputValue'
             />
             <Input
               type='number'
               placeholder='Введите индекс'
               onChange={onIndexInput}
               min={0}
-              max={array.length - 1}
+              max={array.length ? array.length - 1 : '0'}
               isLimitText
               value={indexInput?.toString() || ''}
+              data-cy='inputIndex'
             />
           </div>
           <div className={styles.buttonsBox + ' ml-6'}>
@@ -405,33 +387,37 @@ export const ListPage: React.FC = () => {
               text='Добавить в head'
               onClick={addToHead}
               isLoader={loadersStatus.addInHead}
-              disabled={!disableStatus.addInHead || checkValue(inputValue, array.length)}
+              disabled={inputValue === null ? true : false}
+              data-cy={'addToHead'}
             />
             <Button
               text='Добавить в tail'
               onClick={addToTail}
               isLoader={loadersStatus.addInTail}
-              disabled={!disableStatus.addInTail || checkValue(inputValue, array.length)}
+              disabled={inputValue === null ? true : false}
+              data-cy={'addToTail'}
             />
             <Button
               text='Удалить из head'
               onClick={deleteHead}
               isLoader={loadersStatus.deleteHead}
               disabled={!disableStatus.deleteHead || !array.length}
+              data-cy={'deleteHead'}
             />
             <Button
               text='Удалить из tail'
               onClick={deleteTail}
               isLoader={loadersStatus.deleteTail}
               disabled={!disableStatus.deleteTail || !array.length}
+              data-cy={'deleteTail'}
             />
-
             <Button
               text='Добавить по индексу'
               onClick={insertAt}
               isLoader={loadersStatus.addByIndex}
               disabled={!disableStatus.addByIndex || checkIndex(indexInput, array.length) || checkValue(inputValue, array.length)}
               extraClass={styles.button}
+              data-cy={'insertAt'}
             />
             <Button
               text='Удалить по индексу'
@@ -439,20 +425,26 @@ export const ListPage: React.FC = () => {
               isLoader={loadersStatus.deleteByIndex}
               disabled={!disableStatus.deleteByIndex || checkIndex(indexInput, array.length)}
               extraClass={styles.button}
+              data-cy={'deleteAt'}
             />
           </div>
         </div>
 
         <div className={styles.result}>
-          {array && array.map(({ value, index: _, state }, ind, array) => (
-            <div className={styles.resultElement} key={ind}>
+          {hashTable && array.map(({ value, index: _, state }, ind, array) => (
+            <div
+              className={styles.resultElement}
+              key={ind}
+              data-cy={`circle${ind}`}
+              data-test={`${hashTable[`${ind}`].middleRow.value} ${ind} ${state}`}
+            >
               <Circle
-                head={headStatusRow.includes(ind) ? handleHead(isHeadActive) : ''}
-                tail={tailStatusRow.includes(ind) ? handleTail(isTailActive) : ''}
+                head={hashTable[`${ind}`].topRow.element}
+                tail={hashTable[`${ind}`].bottomRow.element}
                 index={ind}
                 extraClass={styles.mainCircle}
-                letter={isDeleteActive.index === ind ? '' : value.toString()}
-                state={state}
+                letter={hashTable[`${ind}`].middleRow.value.toString()}
+                state={hashTable[`${ind}`].middleRow.state}
               />
               <div className={styles.arrow}>
                 {array.length - 1 !== ind ? <ArrowIcon /> : null}

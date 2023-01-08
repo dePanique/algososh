@@ -28,7 +28,7 @@ export const StringComponent: React.FC = () => {
       setInput(e.target.value);
     }
     , 
-    [input]
+    []
   );
 
   const makeOutput = (symbols: string[], symbolsStatus: ElementStates[]): TOutput[] => {
@@ -62,7 +62,7 @@ export const StringComponent: React.FC = () => {
     setFinalArray(output);
 
     while (head < tail) {
-      await startDelay(1000);
+      await startDelay(500);
 
       if (array[head].status === ElementStates.Changing) {
         let tmp: TOutput;
@@ -105,7 +105,7 @@ export const StringComponent: React.FC = () => {
 
   useEffect(() => {
     setOutput(makeOutput(symbols, symbolsStatus));
-  }, [symbolsStatus]);
+  }, [symbolsStatus, symbols]);
 
   return (
     <SolutionLayout title="Строка">
@@ -116,6 +116,7 @@ export const StringComponent: React.FC = () => {
             maxLength={11}
             value={input}
             onChange={onInput}
+            data-cy="input"
           />
           <Button
             extraClass="ml-6"
@@ -123,17 +124,25 @@ export const StringComponent: React.FC = () => {
             type="submit"
             disabled={!input}
             isLoader={isLoading}
-          />
+            data-cy="button"
+            
+            />
         </form>
 
         <div className={styles.symbolsRow}>
           {finalArray.map(({ symbol, status }, index) => 
               (
+                <div
+                  data-cy={`circle${index}`}
+                  data-testid={status}
+                  data-test={symbol}
+                  key={index}
+                >
                 <Circle
                   letter={symbol}
-                  key={index}
                   state={status}
                 />
+                </div>
               )
             )
           }
