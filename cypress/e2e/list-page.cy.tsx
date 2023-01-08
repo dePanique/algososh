@@ -1,9 +1,9 @@
 import cypress from "cypress";
-import { localServerUrl } from './../../src/constants/e2eTests';
+import { LOCAL_SERV_URL } from './../../src/constants/e2eTests';
 
 describe('should test list-page', () => {
     beforeEach('should enter list page', () => {
-        cy.visit(`${localServerUrl}/list`)
+        cy.visit(`${LOCAL_SERV_URL}/list`)
         cy.get('[data-cy="addToHead"]').as('addToHead')
         cy.get('[data-cy="addToTail"]').as('addToTail')
         cy.get('[data-cy="deleteHead"]').as('deleteHead')

@@ -46,6 +46,50 @@ it('should render Button with isLoader props', () => {
     expect(tree).toMatchSnapshot();
 })
 
+it('should render Button ascending', () => {
+    const component = renderer.create(
+        <Button 
+            sorting={'ascending'}
+        />,
+    );
+
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+})
+
+it('should render Button descending', () => {
+    const component = renderer.create(
+        <Button 
+            sorting={'descending'}
+        />,
+    );
+
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+})
+
+it('should render Button linkedList small', () => {
+    const component = renderer.create(
+        <Button 
+            linkedList='small'
+        />,
+    );
+
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+})
+
+it('should render Button linkedList big', () => {
+    const component = renderer.create(
+        <Button 
+            linkedList='big'
+        />,
+    );
+
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+})
+
 it('should called callback once onClick', async () => {
     const handleClick = jest.fn();
 

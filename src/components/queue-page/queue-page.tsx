@@ -58,7 +58,7 @@ export const QueuePage: React.FC<{children?: React.ReactNode}> = () => {
   
   useEffect(() => {
     setIsDequeueBlocked(queue.isDequeueBlocked());
-  }, []);
+  }, [queue]);
 
   return (
     <SolutionLayout title="Очередь">

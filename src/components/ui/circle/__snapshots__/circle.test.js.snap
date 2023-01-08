@@ -97,8 +97,10 @@ exports[`Circle tests should render Circle with head prop 1`] = `
   className="content "
 >
   <div
-    className="text text_type_input text_color_input mb-4 absolute head element"
-  />
+    className="text text_type_input text_color_input mb-4 absolute head string"
+  >
+    head
+  </div>
   <div
     className="circle   default"
   >
@@ -136,6 +138,52 @@ exports[`Circle tests should render Circle with index 1`] = `
   </p>
   <div
     className="text text_type_input text_color_input mt-4 absolute tail60 element"
+  />
+</div>
+`;
+
+exports[`Circle tests should render Circle with null in head prop 1`] = `
+<div
+  className="content "
+>
+  <div
+    className="text text_type_input text_color_input mb-4 absolute head element"
+  />
+  <div
+    className="circle   default"
+  >
+    <p
+      className="text text_type_circle text_color_input letter"
+    />
+  </div>
+  <p
+    className="text text_type_input text_color_input mt-4 absolute index"
+  />
+  <div
+    className="text text_type_input text_color_input mt-4 absolute tail30 element"
+  />
+</div>
+`;
+
+exports[`Circle tests should render Circle with null in tail 1`] = `
+<div
+  className="content "
+>
+  <div
+    className="text text_type_input text_color_input mb-4 absolute head element"
+  />
+  <div
+    className="circle   default"
+  >
+    <p
+      className="text text_type_circle text_color_input letter"
+    />
+  </div>
+  <p
+    className="text text_type_input text_color_input mt-4 absolute index"
+  />
+  <div
+    className="text text_type_input text_color_input mt-4 absolute tail30 element"
   />
 </div>
 `;
@@ -213,6 +261,19 @@ exports[`Circle tests should render Circle with react-element in tail 1`] = `
 >
   <div
     className="text text_type_input text_color_input mb-4 absolute head element"
+  />
+  <div
+    className="circle   default"
+  >
+    <p
+      className="text text_type_circle text_color_input letter"
+    />
+  </div>
+  <p
+    className="text text_type_input text_color_input mt-4 absolute index"
+  />
+  <div
+    className="text text_type_input text_color_input mt-4 absolute tail30 element"
   >
     <div
       className="content "
@@ -235,19 +296,6 @@ exports[`Circle tests should render Circle with react-element in tail 1`] = `
       />
     </div>
   </div>
-  <div
-    className="circle   default"
-  >
-    <p
-      className="text text_type_circle text_color_input letter"
-    />
-  </div>
-  <p
-    className="text text_type_input text_color_input mt-4 absolute index"
-  />
-  <div
-    className="text text_type_input text_color_input mt-4 absolute tail30 element"
-  />
 </div>
 `;
 
@@ -269,8 +317,10 @@ exports[`Circle tests should render Circle with tail 1`] = `
     className="text text_type_input text_color_input mt-4 absolute index"
   />
   <div
-    className="text text_type_input text_color_input mt-4 absolute tail30 element"
-  />
+    className="text text_type_input text_color_input mt-4 absolute tail30 string"
+  >
+    tail
+  </div>
 </div>
 `;
 

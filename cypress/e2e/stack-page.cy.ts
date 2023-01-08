@@ -1,9 +1,9 @@
 import cypress from "cypress";
-import { localServerUrl } from './../../src/constants/e2eTests';
+import { LOCAL_SERV_URL } from './../../src/constants/e2eTests';
 
 describe('should test stack page', () => {
     beforeEach('should open stack page', () => {
-        cy.visit(`${localServerUrl}/stack`)
+        cy.visit(`${LOCAL_SERV_URL}/stack`)
         cy.get('[data-cy="input"]').as('input')
         cy.get('[data-cy="addButton"]').as('addButton')
         cy.get('[data-cy="deleteButton"]').as('deleteButton')

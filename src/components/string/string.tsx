@@ -28,7 +28,7 @@ export const StringComponent: React.FC = () => {
       setInput(e.target.value);
     }
     , 
-    [input]
+    []
   );
 
   const makeOutput = (symbols: string[], symbolsStatus: ElementStates[]): TOutput[] => {
@@ -105,7 +105,7 @@ export const StringComponent: React.FC = () => {
 
   useEffect(() => {
     setOutput(makeOutput(symbols, symbolsStatus));
-  }, [symbolsStatus]);
+  }, [symbolsStatus, symbols]);
 
   return (
     <SolutionLayout title="Строка">
@@ -133,7 +133,7 @@ export const StringComponent: React.FC = () => {
           {finalArray.map(({ symbol, status }, index) => 
               (
                 <div
-                  data-cy={`circle` + `${index}`}
+                  data-cy={`circle${index}`}
                   data-testid={status}
                   data-test={symbol}
                   key={index}

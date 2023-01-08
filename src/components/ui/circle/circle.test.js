@@ -20,9 +20,17 @@ describe('Circle tests', () => {
         expect(tree).toMatchSnapshot();
     });
 
+    it('should render Circle with null in head prop', () => {
+        const tree = renderer.create(
+            <Circle head={null}/>
+        ).toJSON();
+    
+        expect(tree).toMatchSnapshot();
+    });
+
     it('should render Circle with head prop', () => {
         const tree = renderer.create(
-            <Circle head/>
+            <Circle head='head'/>
         ).toJSON();
     
         expect(tree).toMatchSnapshot();
@@ -36,9 +44,17 @@ describe('Circle tests', () => {
         expect(tree).toMatchSnapshot();
     });
 
+    it('should render Circle with null in tail', () => {
+        const tree = renderer.create(
+            <Circle tail={null} />
+        ).toJSON();
+
+        expect(tree).toMatchSnapshot();
+    });
+
     it('should render Circle with tail', () => {
         const tree = renderer.create(
-            <Circle tail />
+            <Circle tail="tail" />
         ).toJSON();
 
         expect(tree).toMatchSnapshot();
@@ -46,7 +62,7 @@ describe('Circle tests', () => {
 
     it('should render Circle with react-element in tail', () => {
         const tree = renderer.create(
-            <Circle head={<Circle />} />
+            <Circle tail={<Circle />} />
         ).toJSON();
 
         expect(tree).toMatchSnapshot();
